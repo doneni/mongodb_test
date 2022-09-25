@@ -4,6 +4,8 @@ const port = 5000;
 
 const { User } = require('./Models/User'); //User.js(Schema) import
 
+const config = require('./config/key');
+
 app.use(express.urlencoded({ extended: true }));
 
 app.use(express.json());
@@ -30,8 +32,7 @@ app.listen(port, () => console.log('${port} port'));
 
 const mongoose = require('mongoose');
 mongoose
-.connect(
-    'mongodb+srv://doneni:dlehddusWkd@cluster0.cbv0qvh.mongodb.net/test',
+.connect(config.mongoURI,
     {
     }
 )
