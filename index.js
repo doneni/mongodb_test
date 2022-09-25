@@ -1,42 +1,30 @@
 const express = require('express');
 const app = express();
+const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
+
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+
 const port = 5000;
 
-const { User } = require('./Models/User'); //User.js(Schema) import
+// Define Model
+const Book = require('./Models/book');
 
 const config = require('./config/key');
 
-app.use(express.urlencoded({ extended: true }));
+const router = require('./routes')(app, Book)
 
-app.use(express.json());
-
-app.get('/', function(req,res) {
-    res.send('Hello World! ^.^');
+// run server
+const server = app.listen(port, function() {
+    console.log("Express server has started on port" + port)
 });
 
-//resister api
-app.post('/register', (req, res) => {
-    const user = new User(req.body); //User 스카마에 req.body를 담아 user라는 인스턴스로 만듦.
-
-    user.save((err, userInfo) => {
-        if(err) return res.json({success: false, err}); //err일 때 return
-        return res.status(200).json({
-            //status가 20일 때 return
-            success: true,
-            userInfo,
-        })
-    })
+const db = mongoose.connection;
+db.on('error', console.error);
+db.once('open', function() {
+    //connected...
+    console.log('Connected to mongo server');
 });
 
-app.listen(port, () => console.log('${port} port'));
-
-const mongoose = require('mongoose');
-mongoose
-.connect(config.mongoURI,
-    {
-    }
-)
-.then(() => console.log('MongoDB connected'))
-.catch((err) => {
-    console.log(err);
-});
+mongoose.connect('mongodb+srv://doneni:dlehddusWkd@cluster0.cbv0qvh.mongodb.net/test');
